@@ -11,6 +11,7 @@ public class InfisicalConfig
   public string SecretPath { get; }
   public string InfisicalUrl { get; }
   public string Prefix { get; }
+  public bool ExpandSecretReferences { get; set; }
 
   internal InfisicalConfig(
       string environment,
@@ -18,7 +19,8 @@ public class InfisicalConfig
       InfisicalAuth auth,
       string secretPath,
       string infisicalUrl,
-      string prefix
+      string prefix,
+      bool expandSecretReferences
     )
   {
     Environment = environment;
@@ -27,6 +29,7 @@ public class InfisicalConfig
     SecretPath = secretPath;
     InfisicalUrl = infisicalUrl;
     Prefix = prefix;
+    ExpandSecretReferences = expandSecretReferences;
   }
 }
 
@@ -38,6 +41,7 @@ public class InfisicalConfigBuilder
   private InfisicalAuth? _auth;
   private string _secretPath = "/";
   private string _infisicalUrl = "https://app.infisical.com";
+  private bool _expandSecretReferences = true;
 
   public InfisicalConfigBuilder SetAuth(InfisicalAuth auth)
   {
@@ -69,6 +73,12 @@ public class InfisicalConfigBuilder
     return this;
   }
 
+  public InfisicalConfigBuilder ShouldExpandSecretReferences(bool expandSecretReferences)
+  {
+    _expandSecretReferences = expandSecretReferences;
+    return this;
+  }
+
   public InfisicalConfigBuilder SetInfisicalUrl(string infisicalUrl)
   {
     if (infisicalUrl.EndsWith("/api"))
@@ -89,7 +99,8 @@ public class InfisicalConfigBuilder
         auth: _auth!,
         secretPath: _secretPath,
         infisicalUrl: _infisicalUrl,
-        prefix: _prefix ?? ""
+        prefix: _prefix ?? "",
+        expandSecretReferences: _expandSecretReferences
     );
   }
 
