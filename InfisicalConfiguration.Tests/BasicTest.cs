@@ -27,28 +27,24 @@ public class SystemTests
             .SetInfisicalUrl("http://localhost:8080")
             .SetAuth(
                 new InfisicalAuthBuilder()
-                    .SetAzureCustomProviderAuth(options =>
+                    .SetAzureAuth("<identity-id>", async () =>
                     {
-                      options.IdentityId = "<identity-id>";
-                      options.TokenProvider = async () =>
-                      {
-                        // From Azure package: Used to get credentials from Azure CLI
-                        var cliCredential = new VisualStudioCredential();
+                      // From Azure package: Used to get credentials from Azure CLI
+                      var cliCredential = new VisualStudioCredential();
 
-                        // Get JWT token from Azure CLI
-                        var token = await cliCredential.GetTokenAsync(
-                            new TokenRequestContext(
-                                ["https://management.azure.com/.default"]
-                            ),
-                            CancellationToken.None
-                        );
+                      // Get JWT token from Azure CLI
+                      var token = await cliCredential.GetTokenAsync(
+                          new TokenRequestContext(
+                              ["https://management.azure.com/.default"]
+                          ),
+                          CancellationToken.None
+                      );
 
-                        // JWT token can be used to authenticate with Infisical
+                      // JWT token can be used to authenticate with Infisical
 
-                        Console.WriteLine("Token: " + token.Token);
+                      Console.WriteLine("Token: " + token.Token);
 
-                        return token.Token;
-                      };
+                      return token.Token;
                     })
                     .Build()
             )
