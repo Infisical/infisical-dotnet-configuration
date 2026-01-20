@@ -1,15 +1,9 @@
 namespace InfisicalConfiguration;
 
-public class UniversalAuthCredentials
+public class UniversalAuthCredentials(string clientId, string clientSecret)
 {
-  public string ClientId { get; set; }
-  public string ClientSecret { get; set; }
-
-  public UniversalAuthCredentials(string clientId, string clientSecret)
-  {
-    ClientId = clientId;
-    ClientSecret = clientSecret;
-  }
+  public string ClientId { get; set; } = clientId;
+  public string ClientSecret { get; set; } = clientSecret;
 }
 
 public class AzureCustomProviderAuthCredentials
@@ -125,18 +119,17 @@ public class InfisicalAuthBuilder
 
   public InfisicalAuth Build()
   {
-    var auth = _auth;
-    switch (auth.GetAuthMethod())
+    switch (_auth.GetAuthMethod())
     {
       case InfisicalAuthType.Universal:
-        var universalAuth = auth.GetUniversalAuth();
+        var universalAuth = _auth.GetUniversalAuth();
         if (string.IsNullOrEmpty(universalAuth.ClientId) || string.IsNullOrEmpty(universalAuth.ClientSecret))
         {
           throw new InvalidOperationException("ClientId and ClientSecret must be set");
         }
         break;
       case InfisicalAuthType.AzureCustomProvider:
-        var azureCustomProviderAuth = auth.GetAzureCustomProviderAuth();
+        var azureCustomProviderAuth = _auth.GetAzureCustomProviderAuth();
         if (string.IsNullOrEmpty(azureCustomProviderAuth.IdentityId))
         {
           throw new InvalidOperationException("IdentityId must be set");
@@ -151,6 +144,6 @@ public class InfisicalAuthBuilder
         throw new InvalidOperationException("AuthType must be set. Are you missing a call to SetUniversalAuth or SetAzureAuth?");
     }
 
-    return auth;
+    return _auth;
   }
 }

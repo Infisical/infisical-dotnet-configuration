@@ -141,16 +141,13 @@ public class InfisicalConfigurationProvider : ConfigurationProvider
       var url = $"{_config.InfisicalUrl}/api/v3/secrets/raw/?environment={_config.Environment}&workspaceId={_config.ProjectId}&secretPath={_config.SecretPath}&include_imports=true";
 
       var response = await _httpClient.GetAsync(url);
-      var content = await response.Content.ReadAsStringAsync();
+      var content = await response.Content.ReadAsStreamAsync();
       response.EnsureSuccessStatusCode();
       var secrets = SecretsList.Deserialize(content);
-
-
-      var allSecrets = secrets.Secrets.Select(
-          secret => new KeyValuePair<string, string>(
-              secret.SecretKey,
-              secret.SecretValue
-          )).ToList();
+      
+      var allSecrets = secrets.Secrets.ConvertAll(
+        secret => new KeyValuePair<string, string>(secret.Key, secret.Value)
+      );
 
       allSecrets.Reverse();
       _secretsCache.Clear();

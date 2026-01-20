@@ -4,42 +4,30 @@ namespace InfisicalConfiguration;
 
 public class MachineIdentityLogin
 {
+    public string AccessToken { get; set; }
 
-  public string AccessToken { get; set; }
-
-  public static MachineIdentityLogin Deserialize(string content)
-  {
-    var result = JsonSerializer.Deserialize<MachineIdentityLogin>(content, new JsonSerializerOptions()
+    public static MachineIdentityLogin Deserialize(string content)
     {
-      PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    });
+        var result = JsonSerializer.Deserialize<MachineIdentityLogin>(content, InfisicalJsonOptions.Value);
 
-    if (result == null)
-    {
-      throw new InvalidOperationException("Failed to deserialize MachineIdentityLogin");
+        if (result == null)
+        {
+            throw new InvalidOperationException("Failed to deserialize MachineIdentityLogin");
+        }
+
+        return result;
     }
-
-    return result;
-  }
 }
 
 public class SecretsList
 {
-  public List<Secret> Secrets { get; set; }
+    public record Secret(string Key, string Value);
 
-  public static SecretsList Deserialize(string content)
-  {
-    var result = JsonSerializer.Deserialize<SecretsList>(content, new JsonSerializerOptions()
+    public required List<Secret> Secrets { get; set; }
+
+    public static SecretsList Deserialize(Stream content)
     {
-      PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    });
-    return result;
-  }
-}
-
-public class Secret
-{
-  public string SecretKey { get; set; }
-  public string SecretValue { get; set; }
-
+        var result = JsonSerializer.Deserialize<SecretsList>(content, InfisicalJsonOptions.Value);
+        return result!;
+    }
 }
