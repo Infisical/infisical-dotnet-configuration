@@ -1,21 +1,14 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
-using Org.BouncyCastle.Crypto.Engines;
-using Org.BouncyCastle.Crypto.Modes;
-using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Security;
 
 namespace InfisicalConfiguration;
 
 public class InfisicalConfigurationProvider : ConfigurationProvider
 {
   private readonly HttpClient _httpClient;
-  private Dictionary<string, string> _secretsCache = new();
-
-  private string _accessToken;
+  private readonly Dictionary<string, string> _secretsCache = new();
 
   private readonly InfisicalConfig _config;
 
@@ -25,9 +18,9 @@ public class InfisicalConfigurationProvider : ConfigurationProvider
     _config = config;
     _httpClient = new HttpClient();
 
-    _accessToken = Authenticate();
+    var accessToken = Authenticate();
 
-    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
+    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
     _httpClient.BaseAddress = new Uri(_config.InfisicalUrl);
   }
 
